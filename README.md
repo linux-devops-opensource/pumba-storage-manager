@@ -74,8 +74,8 @@ understand how you can continue to add features to this application.
 
 [![LoopBack](https://github.com/strongloop/loopback-next/raw/master/docs/site/imgs/branding/Powered-by-LoopBack-Badge-(blue)-@2x.png)](http://loopback.io/)
 
-POST /api/package
-DEL /api/package
-DEL /api/all
-GET /api/package
-GET /api/all
+POST /api/packages
+DEL /api/packages/:name
+DEL /api/packages
+GET /api/packages/:name
+GET /api/packages
