@@ -11,6 +11,7 @@ import multer from 'multer';
 import path from 'path';
 import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
 import {MySequence} from './sequence';
+const fs = require('fs')
 
 export {ApplicationConfig};
 
@@ -57,8 +58,11 @@ export class PumbaStorageManagerApplication extends BootMixin(
     this.bind(STORAGE_DIRECTORY).to(destination);
     const multerOptions: multer.Options = {
       storage: multer.diskStorage({
-        destination,
-        // Use the original file name as is
+        destination: (req, file, cb) => {
+          let dstfolder = `./${req.originalUrl}`
+          fs.mkdirSync(dstfolder, { recursive: true })
+          cb(null, dstfolder)
+        },
         filename: (req, file, cb) => {
           cb(null, file.originalname);
         },

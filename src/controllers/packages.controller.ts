@@ -1,7 +1,6 @@
 import {inject} from '@loopback/core';
 import {
   del, get,
-
   HttpErrors,
   oas,
   param, post,
@@ -23,18 +22,19 @@ export class PackagesController {
     @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
   ) { }
 
-  @get('/packages/{filename}')
+  @get('/packages/{sid}/{filename}')
   @oas.response.file()
   downloadFile(
+    @param.path.string('sid') SID: string,
     @param.path.string('filename') fileName: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ) {
-    const file = validateFileName(fileName);
+    const file = validateFileName(`${SID}/${fileName}`);
     response.download(file, fileName);
     return response;
   }
 
-  @get('/packages', {
+  @get('/packages/{sid}', {
     responses: {
       200: {
         content: {
@@ -47,20 +47,22 @@ export class PackagesController {
             },
           },
         },
-        description: 'A list of files',
+        description: 'Files and fields',
       },
     },
   })
-  async listFiles(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      readdir(SANDBOX, (err, files) => {
-        if (err) {reject(err)}
-        resolve(files)
-      });
-    })
-  }
+  listFiles(
+    @param.path.string('sid') SID: string,
+  ): Promise<string[]> {
+      return new Promise((resolve, reject) => {
+        readdir(`${SANDBOX}/${SID}`, (err, files) => {
+          if (err) {reject(err)}
+          resolve(files)
+        });
+      })
+    }
 
-  @post('/packages', {
+  @post('/packages/{sid}', {
     responses: {
       200: {
         content: {
@@ -75,6 +77,7 @@ export class PackagesController {
     },
   })
   postPackage(
+    @param.path.string('sid') SID: string,
     @requestBody.file()
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
@@ -89,7 +92,7 @@ export class PackagesController {
     });
   }
 
-  @del('/packages/{filename}', {
+  @del('/packages/{sid}/{filename}', {
     responses: {
       200: {
         content: {
@@ -107,14 +110,19 @@ export class PackagesController {
       },
     },
   })
-  deletePackage(@param.path.string('filename') fileName: string,) {
-    fs.unlink(path.join(SANDBOX, fileName), function (err: any) {
-      if (err) return console.log(err);
-      console.log('file deleted successfully');
-    });
+  deletePackage(
+    @param.path.string('filename') fileName: string,
+    @param.path.string('sid') SID: string,
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      fs.unlink(`${SANDBOX}/${SID}/${fileName}`, (err: any) => {
+        if (err) { reject(err) }
+        resolve("file deleted successfully")
+      });
+    })
   }
 
-  @del('/packages', {
+  @del('/packages/{sid}', {
     responses: {
       200: {
         content: {
@@ -132,15 +140,14 @@ export class PackagesController {
       },
     },
   })
-  deleteAllPackages() {
-    readdir(SANDBOX, (err, files) => {
-      if (err) {console.log(err);}
-      files.forEach(file => {
-        fs.unlink(path.join(SANDBOX, file), function (err: any) {
-          if (err) return console.log(err);
-          console.log('file deleted successfully');
-        });
-      });
+  deleteAllPackages(
+    @param.path.string('sid') SID: string,
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      fs.rmdir(`${SANDBOX}/${SID}`,  { recursive: true }, (err: any) => {
+        if (err) {reject(err)}
+        resolve("SID directory deleted successfully");
+      })
     })
   }
 

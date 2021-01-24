@@ -22,6 +22,13 @@ export class Package extends Entity {
   })
   file: any;
 
+  @property({
+    type: 'string',
+    generated: false,
+    required: true,
+  })
+  sid: string;
+
   constructor(data?: Partial<Package>) {
     super(data);
   }
