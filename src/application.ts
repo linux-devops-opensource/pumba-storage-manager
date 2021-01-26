@@ -11,7 +11,7 @@ import multer from 'multer';
 import path from 'path';
 import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
 import {MySequence} from './sequence';
-const fs = require('fs')
+import fs from 'fs'
 
 export {ApplicationConfig};
 
