@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -19,11 +20,14 @@ import {
 } from '@loopback/rest';
 import {Session} from '../models';
 import {SessionRepository} from '../repositories';
+import {S3} from '../services';
 
 export class SessionController {
   constructor(
     @repository(SessionRepository)
     public sessionRepository : SessionRepository,
+    @inject('services.S3')
+    protected s3Service: S3,
   ) {}
 
   @post('/sessions')
@@ -41,8 +45,9 @@ export class SessionController {
         },
       },
     })
-    session: Omit<Session, 'sid'>,
+    session: Session,
   ): Promise<Session> {
+    await this.s3Service.newSession(session.sid)
     return this.sessionRepository.create(session);
   }
 
@@ -72,6 +77,7 @@ export class SessionController {
   async find(
     @param.filter(Session) filter?: Filter<Session>,
   ): Promise<Session[]> {
+    await this.s3Service.getSessions()
     return this.sessionRepository.find(filter);
   }
 
@@ -144,6 +150,7 @@ export class SessionController {
     description: 'Session DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
+    await this.s3Service.deleteSession(id)
     await this.sessionRepository.deleteById(id);
   }
 }

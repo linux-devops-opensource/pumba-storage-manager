@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -13,17 +14,25 @@ import {
   param,
   patch,
   post,
+  Request,
+  Response,
   requestBody,
+  RestBindings,
 } from '@loopback/rest';
 import {
   Session,
   File,
 } from '../models';
 import {SessionRepository} from '../repositories';
+import {S3} from '../services';
+import multer from 'multer';
+require('dotenv').config()
 
 export class SessionFileController {
   constructor(
     @repository(SessionRepository) protected sessionRepository: SessionRepository,
+    @inject('services.S3')
+    protected s3Service: S3,
   ) { }
 
   @get('/sessions/{id}/files', {
@@ -45,7 +54,7 @@ export class SessionFileController {
     return this.sessionRepository.files(id).find(filter);
   }
 
-  @post('/sessions/{id}/files', {
+  @post('/sessions/{id}/file/{name}', {
     responses: {
       '200': {
         description: 'Session model instance',
@@ -55,19 +64,31 @@ export class SessionFileController {
   })
   async create(
     @param.path.string('id') id: typeof Session.prototype.sid,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(File, {
-            title: 'NewFileInSession',
-            exclude: ['name'],
-            optional: ['sid']
-          }),
-        },
-      },
-    }) file: Omit<File, 'name'>,
-  ): Promise<File> {
-    return this.sessionRepository.files(id).create(file);
+    @param.path.string('name') name: typeof Session.prototype.sid,
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<Object> {
+    const upload = multer()
+    return new Promise<object>(async (resolve, reject) => {
+      upload.single('file')(request, response, async (err: any) => {
+        if (err) reject(err);
+          else {
+            try {
+              if (request.file?.originalname) {
+                await this.s3Service.uploadFile(id, request.file?.originalname, request.file?.buffer, request.file?.mimetype)
+              }
+              const f = {
+                name: request.file?.originalname,
+                sid: id
+              }
+              resolve(this.sessionRepository.files(id).create(f))
+            } catch(err) {
+              reject(err)
+            }
+        }
+      })
+    });
   }
 
   @patch('/sessions/{id}/files', {
