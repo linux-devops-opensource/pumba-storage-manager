@@ -47,7 +47,7 @@ export class SessionController {
     })
     session: Session,
   ): Promise<Session> {
-    await this.s3Service.newSession(session.sid)
+    await this.s3Service.newSession(session.sid, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
     return this.sessionRepository.create(session);
   }
 
@@ -77,7 +77,7 @@ export class SessionController {
   async find(
     @param.filter(Session) filter?: Filter<Session>,
   ): Promise<Session[]> {
-    await this.s3Service.getSessions()
+    //await this.s3Service.getSessions(process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
     return this.sessionRepository.find(filter);
   }
 
@@ -150,7 +150,7 @@ export class SessionController {
     description: 'Session DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.s3Service.deleteSession(id)
+    await this.s3Service.deleteSession(id, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
     await this.sessionRepository.deleteById(id);
   }
 }

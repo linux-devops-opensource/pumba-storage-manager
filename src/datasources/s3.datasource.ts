@@ -11,7 +11,6 @@ const config = {
   options: {
     headers: {
       accept: 'application/json',
-      'Authorization': process.env.S3_TOKEN,
       'ibm-service-instance-id': process.env.S3_RESOURCE_INSTANCE_ID
     },
   },
@@ -20,27 +19,36 @@ const config = {
       template: {
         method: 'GET',
         url: BASE_URL,
+        headers: {
+          'Authorization': '{authToken}',
+        },
       },
       functions: {
-        getSessions: [],
+        getSessions: ['authToken'],
       },
     },
     {
       template: {
         method: 'PUT',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}'
+        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        headers: {
+          'Authorization': '{authToken}',
+        },
       },
       functions: {
-        newSession: ['bucket'],
+        newSession: ['bucket', 'authToken'],
       },
     },
     {
       template: {
         method: 'DELETE',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}'
+        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        headers: {
+          'Authorization': '{authToken}',
+        },
       },
       functions: {
-        deleteSession: ['bucket'],
+        deleteSession: ['bucket', 'authToken'],
       },
 
     },
@@ -49,22 +57,26 @@ const config = {
         method: 'PUT',
         url: BASE_URL + '/pumba-storage-manager-{bucket}/{fileName}',
         headers: {
-          'content-type': '{mimetype}'
+          'content-type': '{mimetype}',
+          'Authorization': '{authToken}',
         },
         body: '{body}'
       },
       functions: {
-        uploadFile: ['bucket','fileName','body', 'mimetype'],
+        uploadFile: ['bucket','fileName','body', 'mimetype', 'authToken'],
       },
 
     },
     {
       template: {
         method: 'DELETE',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}'
+        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        headers: {
+          'Authorization': '{authToken}',
+        },
       },
       functions: {
-        deleteSession: ['bucket'],
+        deleteSession: ['bucket', 'authToken'],
       },
     },
   ],

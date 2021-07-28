@@ -76,7 +76,7 @@ export class SessionFileController {
           else {
             try {
               if (request.file?.originalname) {
-                await this.s3Service.uploadFile(id, request.file?.originalname, request.file?.buffer, request.file?.mimetype)
+                await this.s3Service.uploadFile(id, request.file?.originalname, request.file?.buffer, request.file?.mimetype, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
               }
               const f = {
                 name: request.file?.originalname,
