@@ -74,24 +74,15 @@ export class SessionFileController {
     })
     request: Request,
   ): Promise<Object> {
-    return new Promise<object>(async (resolve, reject) => {
-      try {
-        await parser(request, async (filed: any) => {
-          try {
-            await this.s3Service.uploadFile(id, filed.fieldContent.fileName, filed.fieldContent.fileStream, filed.fieldContent.fileType, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
-            const file = {
-              name: filed.fieldContent.fileName,
-              sid: id
-            }
-            resolve(this.sessionRepository.files(id).create(file))
-          } catch(error) {
-            reject(error)
-          }
-        })
-      } catch(error) {
-        reject(error)
-      }
-    });
+    let file = {}
+    await parser(request, async (filed: any) => {
+      await this.s3Service.uploadFile(id, filed.fieldContent.fileName, filed.fieldContent.fileStream, filed.fieldContent.fileType, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
+        file = {
+          name: filed.fieldContent.fileName,
+          sid: id
+        }
+    })
+    return this.sessionRepository.files(id).create(file)
   }
 
   @patch('/sessions/{id}/files', {

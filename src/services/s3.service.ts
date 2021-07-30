@@ -24,7 +24,7 @@ export class S3Provider implements Provider<S3> {
   ) {}
 
   async value(): Promise<S3> {
-    const authExpirationTime = new Number(process.env.AUTH_EXPIRATION_TIME)
+    const authExpirationTime = process.env.AUTH_EXPIRATION_TIME ?? 0
     const apiKey = process.env.API_KEY
     const grantType = process.env.GRANT_TYPE
     const identifiers = qs.stringify({
@@ -34,10 +34,8 @@ export class S3Provider implements Provider<S3> {
 
     if (apiKey && grantType) {
       if ((authExpirationTime.toString() === 'NaN') || (authExpirationTime <= Math.floor(Date.now() / 1000))) {
-        await this.authService.getToken(identifiers).then((response) => {
-          //@ts-ignore
+        await this.authService.getToken(identifiers).then((response: any) => {
           process.env.AUTH_EXPIRATION_TIME = response.expiration
-          //@ts-ignore
           process.env.S3_TOKEN = response.token_type + ' ' + response.access_token
         }).catch((err) => {
           throw new Error(err);
