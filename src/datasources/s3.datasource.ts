@@ -2,6 +2,7 @@ import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
 const BASE_URL = process.env.S3_BASE_URL ?? process.env.DEFAULT_S3_BASE_URL ?? 'variable not defined'
+const PREFIX = '/pumba-storage-manager-'
 
 const config = {
   name: 's3',
@@ -30,7 +31,7 @@ const config = {
     {
       template: {
         method: 'PUT',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        url: BASE_URL + PREFIX + '{bucket}',
         headers: {
           'Authorization': '{authToken}',
         },
@@ -42,7 +43,7 @@ const config = {
     {
       template: {
         method: 'DELETE',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        url: BASE_URL + PREFIX + '{bucket}',
         headers: {
           'Authorization': '{authToken}',
         },
@@ -50,12 +51,11 @@ const config = {
       functions: {
         deleteSession: ['bucket', 'authToken'],
       },
-
     },
     {
       template: {
         method: 'PUT',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}/{fileName}',
+        url: BASE_URL + PREFIX + '{bucket}/{fileName}',
         headers: {
           'content-type': '{mimetype}',
           'Authorization': '{authToken}',
@@ -65,18 +65,29 @@ const config = {
       functions: {
         uploadFile: ['bucket','fileName','body', 'mimetype', 'authToken'],
       },
-
     },
     {
       template: {
-        method: 'DELETE',
-        url: BASE_URL + '/pumba-storage-manager-{bucket}',
+        method: 'GET',
+        url: BASE_URL + PREFIX + '{bucket}',
         headers: {
           'Authorization': '{authToken}',
         },
       },
       functions: {
-        deleteSession: ['bucket', 'authToken'],
+        getFiles: ['bucket', 'authToken'],
+      },
+    },
+    {
+      template: {
+        method: 'DELETE',
+        url: BASE_URL + PREFIX + '{bucket}/{fileName}',
+        headers: {
+          'Authorization': '{authToken}',
+        },
+      },
+      functions: {
+        deleteFile: ['bucket', 'fileName', 'authToken'],
       },
     },
   ],

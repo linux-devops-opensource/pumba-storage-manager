@@ -12,6 +12,8 @@ export interface S3 {
   newSession(bucket: string, authToken: string): Promise<object>;
   deleteSession(bucket: string, authToken: string):Promise<object>;
   uploadFile(bucket: string,fileName: string, body: Buffer, mimetype: string, authToken: string): Promise<object>;
+  getFiles(bucket: string, authToken: string): Promise<object>;
+  deleteFile(bucket: string, fileName: string , authToken: string): Promise<object>;
 }
 
 export class S3Provider implements Provider<S3> {

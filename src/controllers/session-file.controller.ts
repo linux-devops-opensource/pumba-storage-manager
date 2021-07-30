@@ -62,16 +62,7 @@ export class SessionFileController {
   })
   async create(
     @param.path.string('id') id: typeof Session.prototype.sid,
-    @requestBody({
-      description: 'multipart/form-data value.',
-      required: true,
-      content: {
-        'multipart/form-data': {
-          'x-parser': 'stream',
-          schema: {type: 'object'},
-        },
-      },
-    })
+    @requestBody.file()
     request: Request,
   ): Promise<Object> {
     let file = {}
@@ -120,6 +111,11 @@ export class SessionFileController {
     @param.path.string('id') id: string,
     @param.query.object('where', getWhereSchemaFor(File)) where?: Where<File>,
   ): Promise<Count> {
+    let files = await this.find(id)
+    for (let file of files) {
+      await this.s3Service.deleteFile(id, file.name, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
+    }
+
     return this.sessionRepository.files(id).delete(where);
   }
 }
