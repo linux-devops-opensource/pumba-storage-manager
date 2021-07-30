@@ -13,7 +13,8 @@ export interface S3 {
   deleteSession(bucket: string, authToken: string):Promise<object>;
   uploadFile(bucket: string,fileName: string, body: Buffer, mimetype: string, authToken: string): Promise<object>;
   getFiles(bucket: string, authToken: string): Promise<object>;
-  deleteFile(bucket: string, fileName: string , authToken: string): Promise<object>;
+  deleteFile(bucket: string, fileName: string, authToken: string): Promise<object>;
+  publicAccess(bucket: string, fileName: string, authToken: string): Promise<Object>;
 }
 
 export class S3Provider implements Provider<S3> {

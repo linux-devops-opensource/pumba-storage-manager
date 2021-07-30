@@ -15,7 +15,9 @@ import {
   patch,
   post,
   Request,
+  Response,
   requestBody,
+  RestBindings,
 } from '@loopback/rest';
 import {
   Session,
@@ -25,6 +27,8 @@ import {SessionRepository} from '../repositories';
 import {S3} from '../services';
 require('dotenv').config()
 const parser = require('form-parser')
+const BASE_URL = process.env.S3_BASE_URL ?? process.env.DEFAULT_S3_BASE_URL ?? 'DEFAULT_S3_BASE_URL variable not defined'
+const PREFIX = process.env.BUCKET_PREFIX ?? 'BUCKET_PREFIX variable not defined'
 
 export class SessionFileController {
   constructor(
@@ -32,6 +36,16 @@ export class SessionFileController {
     @inject('services.S3')
     protected s3Service: S3,
   ) { }
+
+  @get('/sessions/{id}/file/{file}')
+  async getFile(
+    @param.path.string('id') id: string,
+    @param.path.string('file') file: string,
+    @inject(RestBindings.Http.RESPONSE)
+    response: Response,
+  ){
+    return response.redirect(301, BASE_URL + PREFIX + `${id}/${file}`)
+  }
 
   @get('/sessions/{id}/files', {
     responses: {
@@ -68,10 +82,11 @@ export class SessionFileController {
     let file = {}
     await parser(request, async (filed: any) => {
       await this.s3Service.uploadFile(id, filed.fieldContent.fileName, filed.fieldContent.fileStream, filed.fieldContent.fileType, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
-        file = {
-          name: filed.fieldContent.fileName,
-          sid: id
-        }
+      await this.s3Service.publicAccess(id, filed.fieldContent.fileName, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
+      file = {
+        name: filed.fieldContent.fileName,
+        sid: id
+      }
     })
     return this.sessionRepository.files(id).create(file)
   }

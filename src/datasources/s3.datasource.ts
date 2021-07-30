@@ -1,8 +1,8 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
-const BASE_URL = process.env.S3_BASE_URL ?? process.env.DEFAULT_S3_BASE_URL ?? 'variable not defined'
-const PREFIX = '/pumba-storage-manager-'
+const BASE_URL = process.env.S3_BASE_URL ?? process.env.DEFAULT_S3_BASE_URL ?? 'DEFAULT_S3_BASE_URL variable not defined'
+const PREFIX = process.env.BUCKET_PREFIX ?? 'BUCKET_PREFIX variable not defined'
 
 const config = {
   name: 's3',
@@ -54,20 +54,6 @@ const config = {
     },
     {
       template: {
-        method: 'PUT',
-        url: BASE_URL + PREFIX + '{bucket}/{fileName}',
-        headers: {
-          'content-type': '{mimetype}',
-          'Authorization': '{authToken}',
-        },
-        body: '{body}'
-      },
-      functions: {
-        uploadFile: ['bucket','fileName','body', 'mimetype', 'authToken'],
-      },
-    },
-    {
-      template: {
         method: 'GET',
         url: BASE_URL + PREFIX + '{bucket}',
         headers: {
@@ -88,6 +74,33 @@ const config = {
       },
       functions: {
         deleteFile: ['bucket', 'fileName', 'authToken'],
+      },
+    },
+    {
+      template: {
+        method: 'PUT',
+        url: BASE_URL + PREFIX + '{bucket}/{fileName}',
+        headers: {
+          'Authorization': '{authToken}',
+          'content-type': '{mimetype}',
+        },
+        body: '{body}'
+      },
+      functions: {
+        uploadFile: ['bucket','fileName','body', 'mimetype', 'authToken'],
+      },
+    },
+    {
+      template: {
+        method: 'PUT',
+        url: BASE_URL + PREFIX + '{bucket}/{fileName}?acl',
+        headers: {
+          'Authorization': '{authToken}',
+          'x-amz-acl': 'public-read'
+        },
+      },
+      functions: {
+        publicAccess: ['bucket', 'fileName', 'authToken'],
       },
     },
   ],
