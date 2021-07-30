@@ -25,8 +25,8 @@ import {
 } from '../models';
 import {SessionRepository} from '../repositories';
 import {S3} from '../services';
-import multer from 'multer';
 require('dotenv').config()
+const parser = require('form-parser')
 
 export class SessionFileController {
   constructor(
@@ -64,30 +64,37 @@ export class SessionFileController {
   })
   async create(
     @param.path.string('id') id: typeof Session.prototype.sid,
-    @param.path.string('name') name: typeof Session.prototype.sid,
-    @requestBody.file()
+    //@param.path.string('name') name: typeof Session.prototype.sid,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
     request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
+    //@inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<Object> {
-    const upload = multer()
     return new Promise<object>(async (resolve, reject) => {
-      upload.single('file')(request, response, async (err: any) => {
-        if (err) reject(err);
-          else {
-            try {
-              if (request.file?.originalname) {
-                await this.s3Service.uploadFile(id, request.file?.originalname, request.file?.buffer, request.file?.mimetype, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
-              }
-              const f = {
-                name: request.file?.originalname,
-                sid: id
-              }
-              resolve(this.sessionRepository.files(id).create(f))
-            } catch(err) {
-              reject(err)
+      try {
+        await parser(request, async (filed: any) => {
+          try {
+            await this.s3Service.uploadFile(id, filed.fieldContent.fileName, filed.fieldContent.fileStream, filed.fieldContent.fileType, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
+            const file = {
+              name: filed.fieldContent.fileName,
+              sid: id
             }
-        }
-      })
+            resolve(this.sessionRepository.files(id).create(file))
+          } catch(error) {
+            reject(error)
+          }
+        })
+      } catch(error) {
+        reject(error)
+      }
     });
   }
 
