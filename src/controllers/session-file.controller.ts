@@ -15,9 +15,7 @@ import {
   patch,
   post,
   Request,
-  Response,
   requestBody,
-  RestBindings,
 } from '@loopback/rest';
 import {
   Session,
@@ -64,7 +62,6 @@ export class SessionFileController {
   })
   async create(
     @param.path.string('id') id: typeof Session.prototype.sid,
-    //@param.path.string('name') name: typeof Session.prototype.sid,
     @requestBody({
       description: 'multipart/form-data value.',
       required: true,
@@ -76,7 +73,6 @@ export class SessionFileController {
       },
     })
     request: Request,
-    //@inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<Object> {
     return new Promise<object>(async (resolve, reject) => {
       try {
