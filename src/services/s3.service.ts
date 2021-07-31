@@ -32,11 +32,15 @@ export class S3Provider implements Provider<S3> {
     const grantType = process.env.GRANT_TYPE
     const identifiers = qs.stringify({
       'apikey': apiKey,
+      // for IBM shit API
+      // eslint-disable-next-line
       'grant_type': grantType
     })
 
     if (apiKey && grantType) {
       if ((authExpirationTime.toString() === 'NaN') || (authExpirationTime <= Math.floor(Date.now() / 1000))) {
+        // for IBM shit API again, we could create response obj but the response fileds contains underscore anway
+        // eslint-disable-next-line
         await this.authService.getToken(identifiers).then((response: any) => {
           process.env.AUTH_EXPIRATION_TIME = response.expiration
           process.env.S3_TOKEN = response.token_type + ' ' + response.access_token

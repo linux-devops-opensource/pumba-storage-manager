@@ -80,6 +80,8 @@ export class SessionFileController {
     request: Request,
   ): Promise<Object> {
     let file = {}
+    // the parser lib get type 'any'
+    // eslint-disable-next-line
     await parser(request, async (filed: any) => {
       await this.s3Service.uploadFile(id, filed.fieldContent.fileName, filed.fieldContent.fileStream, filed.fieldContent.fileType, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
       await this.s3Service.publicAccess(id, filed.fieldContent.fileName, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
@@ -126,8 +128,8 @@ export class SessionFileController {
     @param.path.string('id') id: string,
     @param.query.object('where', getWhereSchemaFor(File)) where?: Where<File>,
   ): Promise<Count> {
-    let files = await this.find(id)
-    for (let file of files) {
+    const files = await this.find(id)
+    for (const file of files) {
       await this.s3Service.deleteFile(id, file.name, process.env.S3_TOKEN ?? 'S3_TOKEN is not defined')
     }
 
