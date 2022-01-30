@@ -1,0 +1,951 @@
+
+> storage-manager@0.0.1 preopenapi-spec C:\Users\adidush\Desktop\army-stuff\pumba\pumba-storage-manager
+> npm run build
+
+
+> storage-manager@0.0.1 build C:\Users\adidush\Desktop\army-stuff\pumba\pumba-storage-manager
+> lb-tsc
+
+
+> storage-manager@0.0.1 openapi-spec C:\Users\adidush\Desktop\army-stuff\pumba\pumba-storage-manager
+> node ./dist/openapi-spec
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "storage-manager",
+    "version": "0.0.1",
+    "description": "pumba storage manager",
+    "contact": {
+      "name": "Joshua",
+      "email": "shuki.grinman@gmail.com"
+    }
+  },
+  "paths": {
+    "/ping": {
+      "get": {
+        "x-controller-name": "PingController",
+        "x-operation-name": "ping",
+        "tags": [
+          "PingController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ping Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingResponse"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "PingController.ping"
+      }
+    },
+    "/sessions/count": {
+      "get": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "count",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session model count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loopback.Count"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Session.WhereFilter",
+                  "additionalProperties": true,
+                  "x-typescript-type": "@loopback/repository#Where<Session>"
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "SessionController.count"
+      }
+    },
+    "/sessions/{id}/file/{name}": {
+      "post": {
+        "x-controller-name": "SessionFileController",
+        "x-operation-name": "create",
+        "tags": [
+          "SessionFileController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "x-parser": "stream",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request body for multipart/form-data based file upload",
+          "required": true,
+          "x-parameter-index": 1
+        },
+        "operationId": "SessionFileController.create"
+      }
+    },
+    "/sessions/{id}/file/{file}": {
+      "get": {
+        "x-controller-name": "SessionFileController",
+        "x-operation-name": "getFile",
+        "tags": [
+          "SessionFileController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Return value of SessionFileController.getFile"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "operationId": "SessionFileController.getFile"
+      }
+    },
+    "/sessions/{id}/files": {
+      "patch": {
+        "x-controller-name": "SessionFileController",
+        "x-operation-name": "patch",
+        "tags": [
+          "SessionFileController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session.File PATCH success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loopback.Count"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "File.WhereFilter",
+                  "additionalProperties": true,
+                  "x-typescript-type": "@loopback/repository#Where<File>"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilePartial"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "SessionFileController.patch"
+      },
+      "get": {
+        "x-controller-name": "SessionFileController",
+        "x-operation-name": "find",
+        "tags": [
+          "SessionFileController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of Session has many File",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/File"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "SessionFileController.find"
+      },
+      "delete": {
+        "x-controller-name": "SessionFileController",
+        "x-operation-name": "delete",
+        "tags": [
+          "SessionFileController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session.File DELETE success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loopback.Count"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "File.WhereFilter",
+                  "additionalProperties": true,
+                  "x-typescript-type": "@loopback/repository#Where<File>"
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "SessionFileController.delete"
+      }
+    },
+    "/sessions/{id}": {
+      "put": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "replaceById",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Session PUT success"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Session"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "SessionController.replaceById"
+      },
+      "patch": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "updateById",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Session PATCH success"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionPartial"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "SessionController.updateById"
+      },
+      "get": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "findById",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionWithRelations"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Filter"
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "SessionController.findById"
+      },
+      "delete": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "deleteById",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Session DELETE success"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "operationId": "SessionController.deleteById"
+      }
+    },
+    "/sessions": {
+      "post": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "create",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewSession"
+              }
+            }
+          }
+        },
+        "operationId": "SessionController.create"
+      },
+      "patch": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "updateAll",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Session PATCH success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loopback.Count"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Session.WhereFilter",
+                  "additionalProperties": true,
+                  "x-typescript-type": "@loopback/repository#Where<Session>"
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionPartial"
+              }
+            }
+          }
+        },
+        "operationId": "SessionController.updateAll"
+      },
+      "get": {
+        "x-controller-name": "SessionController",
+        "x-operation-name": "find",
+        "tags": [
+          "SessionController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of Session model instances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionWithRelations"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session.Filter1"
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "SessionController.find"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "File": {
+        "title": "File",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": true
+      },
+      "FilePartial": {
+        "title": "FilePartial",
+        "type": "object",
+        "description": "(tsType: Partial<File>, schemaOptions: { partial: true })",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sid": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "x-typescript-type": "Partial<File>"
+      },
+      "Session": {
+        "title": "Session",
+        "type": "object",
+        "properties": {
+          "sid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sid"
+        ],
+        "additionalProperties": true
+      },
+      "NewSession": {
+        "title": "NewSession",
+        "type": "object",
+        "description": "(tsType: Session, schemaOptions: { title: 'NewSession' })",
+        "properties": {
+          "sid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sid"
+        ],
+        "additionalProperties": true,
+        "x-typescript-type": "Session"
+      },
+      "FileWithRelations": {
+        "title": "FileWithRelations",
+        "type": "object",
+        "description": "(tsType: FileWithRelations, schemaOptions: { includeRelations: true })",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": true,
+        "x-typescript-type": "FileWithRelations"
+      },
+      "SessionWithRelations": {
+        "title": "SessionWithRelations",
+        "type": "object",
+        "description": "(tsType: SessionWithRelations, schemaOptions: { includeRelations: true })",
+        "properties": {
+          "sid": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileWithRelations"
+            }
+          }
+        },
+        "required": [
+          "sid"
+        ],
+        "additionalProperties": true,
+        "x-typescript-type": "SessionWithRelations"
+      },
+      "SessionPartial": {
+        "title": "SessionPartial",
+        "type": "object",
+        "description": "(tsType: Partial<Session>, schemaOptions: { partial: true })",
+        "properties": {
+          "sid": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "x-typescript-type": "Partial<Session>"
+      },
+      "PingResponse": {
+        "type": "object",
+        "title": "PingResponse",
+        "properties": {
+          "greeting": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "properties": {
+              "Content-Type": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "loopback.Count": {
+        "type": "object",
+        "title": "loopback.Count",
+        "x-typescript-type": "@loopback/repository#Count",
+        "properties": {
+          "count": {
+            "type": "number"
+          }
+        }
+      },
+      "Session.ScopeFilter": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 100
+          },
+          "skip": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "order": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "where": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "fields": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              }
+            ]
+          },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": false,
+        "title": "Session.ScopeFilter"
+      },
+      "Session.IncludeFilter.Items": {
+        "title": "Session.IncludeFilter.Items",
+        "type": "object",
+        "properties": {
+          "relation": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/Session.ScopeFilter"
+          }
+        }
+      },
+      "Session.Filter": {
+        "type": "object",
+        "title": "Session.Filter",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 100
+          },
+          "skip": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "order": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "fields": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "sid": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "sid"
+                },
+                "uniqueItems": true
+              }
+            ],
+            "title": "Session.Fields"
+          },
+          "include": {
+            "title": "Session.IncludeFilter",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Session.IncludeFilter.Items"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "additionalProperties": false,
+        "x-typescript-type": "@loopback/repository#Filter<Session>"
+      },
+      "Session.Filter1": {
+        "type": "object",
+        "title": "Session.Filter",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 100
+          },
+          "skip": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "order": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "where": {
+            "title": "Session.WhereFilter",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "fields": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "sid": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "sid"
+                },
+                "uniqueItems": true
+              }
+            ],
+            "title": "Session.Fields"
+          },
+          "include": {
+            "title": "Session.IncludeFilter",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Session.IncludeFilter.Items"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "additionalProperties": false,
+        "x-typescript-type": "@loopback/repository#Filter<Session>"
+      }
+    }
+  }
+}
