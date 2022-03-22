@@ -42,34 +42,15 @@ export class SessionController {
 		})
 		session: Session
 	): Promise<Session> {
-		let data = await this.s3.listBuckets([]);
-		console.log(data);
-
 		const bucketData = {
 			Bucket: BUCKET_PREFIX + session.sid,
 			CreateBucketConfiguration: { LocationConstraint: REGION }
 		};
 		await this.s3.createBucket(bucketData);
 
-		data = await this.s3.listBuckets([]);
-		console.log(data);
-
-		// let opts: any = {
-		// 	service: SERVICE,
-		// 	host: BASE_URL_NO_PREFIX,
-		// 	method: 'PUT',
-		// 	path: '/' + BUCKET_PREFIX + session.sid,
-		// 	region: REGION,
-		// 	body: ''
-		// };
-		// aws4.sign(opts, { accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_ACCESS_KEY });
-		// console.log(opts);
-
-		// const auth = opts.headers['Authorization'];
-		// const amzDate = opts.headers['X-Amz-Date'];
-		// const amzContent = opts.headers['X-Amz-Content-Sha256'];
-		// await this.s3Service.newSession(session.sid, auth, amzDate, amzContent);
-		return this.sessionRepository.create(session);
+		// BANDAID FIXME -- Error: Navigational properties are not allowed in model data (model Session property files)
+		return session;
+		// return this.sessionRepository.create(session);
 	}
 
 	@get('/sessions/count')
@@ -165,7 +146,8 @@ export class SessionController {
 		description: 'Session DELETE success'
 	})
 	async deleteById(@param.path.string('id') id: string): Promise<void> {
-		await this.s3Service.deleteSession(id, process.env.S3_TOKEN ? process.env.S3_TOKEN : 'S3_TOKEN is not defined');
+		await this.s3.deleteBucket({ Bucket: BUCKET_PREFIX + id });
+		// await this.s3Service.deleteSession(id, process.env.S3_TOKEN ? process.env.S3_TOKEN : 'S3_TOKEN is not defined');
 		await this.sessionRepository.deleteById(id);
 	}
 }
