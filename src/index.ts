@@ -3,12 +3,12 @@ import {ApplicationConfig, StorageManagerApplication} from './application';
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  if (process.env.API_KEY == undefined) {
-    throw new Error('API_KEY is not defined')
-  }
-  if ( process.env.AUTH_BASE_URL == undefined ) {
-    throw new Error('AUTH_BASE_URL is not defined')
-  }
+  // if (process.env.API_KEY == undefined) {
+  //   throw new Error('API_KEY is not defined')
+  // }
+  // if ( process.env.AUTH_BASE_URL == undefined ) {
+  //   throw new Error('AUTH_BASE_URL is not defined')
+  // }
   if ( process.env.S3_BASE_URL == undefined ) {
     throw new Error('S3_BASE_URL is not defined')
   }
@@ -16,9 +16,9 @@ export async function main(options: ApplicationConfig = {}) {
     throw new Error('BUCKET_PREFIX is not defined')
   }
 
-  if ( process.env.GRANT_TYPE == undefined ) {
-    throw new Error('GRANT_TYPE is not defined')
-  }
+  // if ( process.env.GRANT_TYPE == undefined ) {
+  //   throw new Error('GRANT_TYPE is not defined')
+  // }
   // if ( process.env.AUTH_BASE_URL == undefined ) {
   //   throw new Error('AUTH_BASE_URL is not defined')
   // }

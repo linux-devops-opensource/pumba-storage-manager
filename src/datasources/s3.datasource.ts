@@ -8,6 +8,8 @@ if (BASE_URL == undefined || PREFIX == undefined) {
 	throw new Error();
 }
 
+const BASE_URL_NO_PREFIX = BASE_URL.replace(/https?:\/\//, '').replace('/', '');
+
 const config = {
 	name: 's3',
 	connector: 'rest',
@@ -37,11 +39,14 @@ const config = {
 				method: 'PUT',
 				url: BASE_URL + PREFIX + '{bucket}',
 				headers: {
-					Authorization: '{authToken}'
+					Authorization: '{authToken}',
+					'X-Amz-Date': '{amzDate}',
+					'X-Amz-Content-Sha256': '{amzContent}',
+					Host: BASE_URL_NO_PREFIX
 				}
 			},
 			functions: {
-				newSession: [ 'bucket', 'authToken' ]
+				newSession: [ 'bucket', 'authToken', 'amzDate', 'amzContent' ]
 			}
 		},
 		{

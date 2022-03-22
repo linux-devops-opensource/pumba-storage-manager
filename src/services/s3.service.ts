@@ -9,7 +9,7 @@ export interface S3 {
 	// mapped to REST/SOAP/gRPC operations as stated in the datasource
 	// json file.
 	getSessions(authToken: string): Promise<object>;
-	newSession(bucket: string, authToken: string): Promise<object>;
+	newSession(bucket: string, authToken: string, amzDate: string, amzContent: string): Promise<object>;
 	deleteSession(bucket: string, authToken: string): Promise<object>;
 	uploadFile(bucket: string, fileName: string, body: Buffer, mimetype: string, authToken: string): Promise<object>;
 	getFiles(bucket: string, authToken: string): Promise<object>;
@@ -25,33 +25,33 @@ export class S3Provider implements Provider<S3> {
 	) {}
 
 	async value(): Promise<S3> {
-		const authExpirationTime = process.env.AUTH_EXPIRATION_TIME ? process.env.AUTH_EXPIRATION_TIME : 0;
-		const apiKey = process.env.API_KEY;
-		const grantType = process.env.GRANT_TYPE;
-		const identifiers = qs.stringify({
-			apikey: apiKey,
-			// for IBM shit API
-			// eslint-disable-next-line
-			grant_type: grantType
-		});
+		// const authExpirationTime = process.env.AUTH_EXPIRATION_TIME ? process.env.AUTH_EXPIRATION_TIME : 0;
+		// const apiKey = process.env.API_KEY;
+		// const grantType = process.env.GRANT_TYPE;
+		// const identifiers = qs.stringify({
+		// 	apikey: apiKey,
+		// 	// for IBM shit API
+		// 	// eslint-disable-next-line
+		// 	grant_type: grantType
+		// });
 
-		if (apiKey && grantType) {
-			if (authExpirationTime.toString() === 'NaN' || authExpirationTime <= Math.floor(Date.now() / 1000)) {
-				// for IBM shit API again, we could create response obj but the response fileds contains underscore anway
-				// eslint-disable-next-line
-				await this.authService
-					.getToken(identifiers)
-					.then((response: any) => {
-						process.env.AUTH_EXPIRATION_TIME = response.expiration;
-						process.env.S3_TOKEN = response.token_type + ' ' + response.access_token;
-					})
-					.catch((err) => {
-						throw new Error(err);
-					});
-			}
-		} else {
-			throw new Error('API key OR Grant type not defined');
-		}
+		// if (apiKey && grantType) {
+		// 	if (authExpirationTime.toString() === 'NaN' || authExpirationTime <= Math.floor(Date.now() / 1000)) {
+		// 		// for IBM shit API again, we could create response obj but the response fileds contains underscore anway
+		// 		// eslint-disable-next-line
+		// 		await this.authService
+		// 			.getToken(identifiers)
+		// 			.then((response: any) => {
+		// 				process.env.AUTH_EXPIRATION_TIME = response.expiration;
+		// 				process.env.S3_TOKEN = response.token_type + ' ' + response.access_token;
+		// 			})
+		// 			.catch((err) => {
+		// 				throw new Error(err);
+		// 			});
+		// 	}
+		// } else {
+		// 	throw new Error('API key OR Grant type not defined');
+		// }
 
 		return getService(this.dataSource);
 	}
